@@ -11,31 +11,30 @@ mod net;
 use std::io;
 use std::ops::{State, Generator};
 
-use base::{Core, Handle};
+use base::{Core, context, Async};
 use net::{Conn, TcpListener};
 
 fn main() {
-    let core = Core::new();
-    let handle = core.handle();
+    let mut core = Core::new();
 
-    core.run(serve(handle));
+    core.run(serve());
 }
 
 #[inline]
-fn serve(handle: Handle) -> impl Generator<Return = io::Result<()>, Yield = ()> {
+fn serve() -> impl Async<io::Result<()>> {
     let addr = "127.0.0.1:12345".parse().unwrap();
     let listener = TcpListener::bind(&addr)?;
 
     loop {
         let conn = await!(listener.accept())?;
-        handle.spawn(handle_conn(conn));
+        context().spawn(handle_conn(conn));
     }
 
     Ok(())
 
 }
 
-fn handle_conn(mut conn: Conn) -> impl Generator<Return = (), Yield = ()> {
+fn handle_conn(mut conn: Conn) -> impl Async<()> {
     let mut buf = [0; 1024];
 
     loop {
