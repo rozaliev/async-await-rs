@@ -7,12 +7,33 @@ use mio::tcp::TcpListener as MioTcpListener;
 use mio::net::TcpStream;
 
 macro_rules! nb_yield {
-    ($e:expr) => ({
+    ($fd:expr, $e:expr, Read) => (
+        nb_yield!($e, {
+            ::core::context().register_read(&$fd);
+        })
+    );
+
+    ($fd:expr, $e:expr, Write) => (
+        nb_yield!($e, {
+            ::core::context().register_read(&$fd);
+        })
+    );
+
+    ($fd:expr, $e:expr, All) => (
+        nb_yield!($e, {
+            ::core::context().register_all(&$fd);
+        })
+    );
+
+    ($e:expr, $i:expr) => ({
         let ret;
         loop {
             match $e {
                 Ok(v) => { ret = Ok(v); break },
-                Err(ref err) if err.kind() == io::ErrorKind::WouldBlock => yield,
+                Err(ref err) if err.kind() == io::ErrorKind::WouldBlock => {
+                    $i
+                    yield
+                },
                 Err(err) => { ret = Err(err); break },
             }
         }
@@ -33,7 +54,7 @@ impl TcpListener {
 
 
     pub fn accept(&self) -> impl Generator<Return = io::Result<Conn>, Yield = ()> {
-        let (stream, _) = nb_yield!(self.0.accept())?;
+        let (stream, _) = nb_yield!(self.0, self.0.accept(), Read)?;
         Ok(Conn(stream))
     }
 }
@@ -43,7 +64,7 @@ impl Conn {
                 buf: &mut [u8])
                 -> impl Generator<Return = io::Result<usize>, Yield = ()> {
 
-        nb_yield!(self.0.read(buf))
+        nb_yield!(self.0, self.0.read(buf), Read)
     }
 
     pub fn write_all(&mut self,
@@ -65,6 +86,6 @@ impl Conn {
     }
 
     pub fn write(&mut self, buf: &[u8]) -> impl Generator<Return = io::Result<usize>, Yield = ()> {
-        nb_yield!(self.0.write(buf))
+        nb_yield!(self.0, self.0.write(buf), Write)
     }
 }

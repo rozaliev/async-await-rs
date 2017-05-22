@@ -7,11 +7,13 @@ extern crate mio;
 #[macro_use]
 mod base;
 mod net;
+mod core;
 
 use std::io;
 use std::ops::{State, Generator};
 
-use base::{Core, context, Async};
+use core::{Core, context};
+use base::Async;
 use net::{Conn, TcpListener};
 
 fn main() {
@@ -20,7 +22,6 @@ fn main() {
     core.run(serve());
 }
 
-#[inline]
 fn serve() -> impl Async<io::Result<()>> {
     let addr = "127.0.0.1:12345".parse().unwrap();
     let listener = TcpListener::bind(&addr)?;
@@ -29,9 +30,6 @@ fn serve() -> impl Async<io::Result<()>> {
         let conn = await!(listener.accept())?;
         context().spawn(handle_conn(conn));
     }
-
-    Ok(())
-
 }
 
 fn handle_conn(mut conn: Conn) -> impl Async<()> {
