@@ -5,6 +5,11 @@
 extern crate mio;
 
 #[macro_use]
+extern crate log;
+extern crate env_logger;
+
+
+#[macro_use]
 mod base;
 mod net;
 mod core;
@@ -17,6 +22,7 @@ use base::Async;
 use net::{Conn, TcpListener};
 
 fn main() {
+    env_logger::init().unwrap();
     let mut core = Core::new();
 
     core.run(serve());
@@ -38,11 +44,11 @@ fn handle_conn(mut conn: Conn) -> impl Async<()> {
     loop {
         let n = await!(conn.read(&mut buf)).unwrap();
         if n == 0 {
-            println!("eof");
+            debug!("eof");
             return;
         }
-        println!("read {} bytes: {:?}", n, &buf[0..n]);
+        trace!("read {} bytes: {:?}", n, &buf[0..n]);
         await!(conn.write_all(&buf[0..n]));
-        println!("buf written");
+        trace!("buf written");
     }
 }

@@ -5,3 +5,5 @@ authors = ["Evgeny Rozaliev <rozaliev@gmail.com>"]
 
 [dependencies]
 mio = "*"
+log = "*"
+env_logger = "*"

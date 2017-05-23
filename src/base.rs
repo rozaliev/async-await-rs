@@ -15,8 +15,6 @@ pub enum Await<T> {
 
 
 
-
-
 impl<R, T> Async<R> for T
     where T: Generator<Return = R, Yield = ()>
 {

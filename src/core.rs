@@ -88,7 +88,7 @@ impl Core {
                     .unwrap();
             }
 
-            println!("main task not ready");
+            trace!("main task not ready");
 
             loop {
 
@@ -113,12 +113,12 @@ impl Core {
                 }
 
                 for i in compl.drain(..) {
-                    println!("task {:?} completed", i);
+                    trace!("task {:?} completed", i);
                     self.tasks.remove(&i);
                 }
 
                 for tok in new_awaiting.drain(..) {
-                    println!("task {:?} scheduled to await", tok);
+                    trace!("task {:?} scheduled to await", tok);
                     if let Some(task) = self.tasks.remove(&tok) {
                         self.awaiting.insert(tok, task);
                     }
@@ -147,9 +147,11 @@ impl Core {
                     for event in &self.events {
                         let tok = event.token();
                         if tok == MAIN_TASK {
+                            trace!("main task awaken");
                             main_fired = true;
                         } else {
                             if let Some(task) = self.awaiting.remove(&tok) {
+                                trace!("task {:?} awaken", tok);
                                 self.tasks.insert(tok, task);
                             }
                         }
