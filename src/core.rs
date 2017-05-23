@@ -142,7 +142,12 @@ impl Core {
                 // main fd
                 {
                     let mut main_fired = false;
-                    let dur = Some(::std::time::Duration::from_millis(100));
+                    let dur = if self.tasks.len() == 0 {
+                        trace!("no active tasks, awaiting io");
+                        None
+                    } else {
+                        Some(::std::time::Duration::from_millis(100))
+                    };
                     self.poll.poll(&mut self.events, dur).unwrap();
                     for event in &self.events {
                         let tok = event.token();
