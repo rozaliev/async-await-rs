@@ -1,10 +1,10 @@
 use std::net::SocketAddr;
 use std::io::{self, Read, Write};
 
-use std::ops::{Generator, State};
-
 use mio::tcp::TcpListener as MioTcpListener;
 use mio::net::TcpStream;
+
+use base::Async;
 
 macro_rules! nb_yield {
     ($fd:expr, $e:expr, Read) => (
@@ -53,23 +53,19 @@ impl TcpListener {
     }
 
 
-    pub fn accept(&self) -> impl Generator<Return = io::Result<Conn>, Yield = ()> {
+    pub fn accept(&self) -> impl Async<io::Result<Conn>> {
         let (stream, _) = nb_yield!(self.0, self.0.accept(), Read)?;
         Ok(Conn(stream))
     }
 }
 
 impl Conn {
-    pub fn read(&mut self,
-                buf: &mut [u8])
-                -> impl Generator<Return = io::Result<usize>, Yield = ()> {
+    pub fn read(&mut self, buf: &mut [u8]) -> impl Async<io::Result<usize>> {
 
         nb_yield!(self.0, self.0.read(buf), Read)
     }
 
-    pub fn write_all(&mut self,
-                     mut buf: &[u8])
-                     -> impl Generator<Return = io::Result<()>, Yield = ()> {
+    pub fn write_all(&mut self, mut buf: &[u8]) -> impl Async<io::Result<()>> {
 
         while !buf.is_empty() {
             match await!(self.write(buf)) {
@@ -85,7 +81,7 @@ impl Conn {
         Ok(())
     }
 
-    pub fn write(&mut self, buf: &[u8]) -> impl Generator<Return = io::Result<usize>, Yield = ()> {
+    pub fn write(&mut self, buf: &[u8]) -> impl Async<io::Result<usize>> {
         nb_yield!(self.0, self.0.write(buf), Write)
     }
 }

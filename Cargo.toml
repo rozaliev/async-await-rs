@@ -8,3 +8,4 @@ mio = "*"
 log = "*"
 env_logger = "*"
 clap = {version = "2", features = ["yaml"]}
+httparse = "*"

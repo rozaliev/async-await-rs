@@ -2,7 +2,10 @@ name: async-await
 version: "0.1.0"
 author: Evgeny Rozaliev <rozaliev@gmail.com>
 about: Async/await prototypes
-args:
+
 subcommands:
+    - simple_http:
+        about: static http server 
     - echo:
         about: echo server
+    

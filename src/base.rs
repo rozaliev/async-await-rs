@@ -1,9 +1,5 @@
 use std::ops::{State, Generator};
 
-
-
-
-
 pub trait Async<R> {
     fn poll(&mut self) -> Await<R>;
 }
@@ -40,9 +36,9 @@ macro_rules! await {
         let mut g = $e;
         let ret;
         loop {
-            match g.resume(()) {
-                State::Yielded(()) => yield,
-                State::Complete(r) => {
+            match g.poll() {
+                $crate::base::Await::NotReady => yield,
+                $crate::base::Await::Done(r) => {
                     ret = r;
                     break
                 }
