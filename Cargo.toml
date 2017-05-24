@@ -7,3 +7,4 @@ authors = ["Evgeny Rozaliev <rozaliev@gmail.com>"]
 mio = "*"
 log = "*"
 env_logger = "*"
+clap = {version = "2", features = ["yaml"]}

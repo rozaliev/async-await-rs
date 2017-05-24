@@ -188,17 +188,17 @@ impl Context {
         tasks.push(Box::new(g));
     }
 
-    pub fn register_read<T: AsRawFd>(&self, fd: &T) {
+    pub(crate) fn register_read<T: AsRawFd>(&self, fd: &T) {
         self.new_async_interests
             .set(Some((fd.as_raw_fd(), mio::Ready::readable())));
     }
 
-    pub fn register_write<T: AsRawFd>(&self, fd: &T) {
+    pub(crate) fn register_write<T: AsRawFd>(&self, fd: &T) {
         self.new_async_interests
             .set(Some((fd.as_raw_fd(), mio::Ready::writable())));
     }
 
-    pub fn register_all(&self) {}
+    pub(crate) fn register_all(&self) {}
 
     fn current_token(&self) -> mio::Token {
         self.current_token.get()
