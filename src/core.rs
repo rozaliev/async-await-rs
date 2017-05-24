@@ -146,7 +146,7 @@ impl Core {
                         trace!("no active tasks, awaiting io");
                         None
                     } else {
-                        Some(::std::time::Duration::from_millis(100))
+                        Some(::std::time::Duration::from_millis(1))
                     };
                     self.poll.poll(&mut self.events, dur).unwrap();
                     for event in &self.events {
