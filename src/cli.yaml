@@ -10,4 +10,5 @@ subcommands:
         about: echo server
     - iter:
         about: infinite iterator example
-    
+    - dataflow:
+        about: dataflow example

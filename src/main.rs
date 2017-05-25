@@ -1,7 +1,7 @@
 #![feature(conservative_impl_trait)]
 #![feature(generator_trait)]
 #![feature(generators)]
-
+#![feature(never_type)]
 
 extern crate mio;
 
@@ -38,6 +38,9 @@ fn main() {
         }
         Some("iter") => {
             apps::iter::run();
+        }
+        Some("dataflow") => {
+            apps::dataflow::run();
         }
 
         Some(n) => unreachable!(),
