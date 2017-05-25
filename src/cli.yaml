@@ -8,4 +8,6 @@ subcommands:
         about: static http server 
     - echo:
         about: echo server
+    - iter:
+        about: infinite iterator example
     

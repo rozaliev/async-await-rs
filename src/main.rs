@@ -30,8 +30,15 @@ fn main() {
     let yaml = load_yaml!("cli.yaml");
     let matches = App::from_yaml(yaml).get_matches();
     let app = match matches.subcommand_name() {
-        Some("echo") => core.run(apps::echo::serve()),
-        Some("simple_http") => core.run(apps::simple_http::serve()),
+        Some("echo") => {
+            core.run(apps::echo::serve());
+        }
+        Some("simple_http") => {
+            core.run(apps::simple_http::serve());
+        }
+        Some("iter") => {
+            apps::iter::run();
+        }
 
         Some(n) => unreachable!(),
         None => {
